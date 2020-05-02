@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block bloglist %}
+
+{% if breadcrumb_name %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item active">{{ breadcrumb_name }}</li>
+        <li class="breadcrumb-item" style="font-size: 1.5em; font-weight: 400"><a href="{{ breadcrumb_item.get_absolute_url }}">{{ breadcrumb_item.name }}</a></li>
+    </ol>
+</nav>
+{% endif %}
+
+{% for result in object_list %}
+<article class="post post-{{ result.object.pk }}">
+    <header class="entry-header">
+        <h1 class="entry-title">
+            <a href="{{ result.object.get_absolute_url }}">{{ result.object.title }}</a>
+        </h1>
+        <div class="entry-meta">
+        <span class="post-category">
+            <a href="{% url 'article:category' result.object.category.pk %}">
+                {{ result.object.category.name }}</a></span>
+            <span class="post-date"><a href="#">
+                <time class="entry-date" datetime="{{ result.object.created_time }}">
+                    {{ result.object.created_time }}</time></a></span>
+            <span class="post-author"><a href="#">{{ result.object.author }}</a></span>
+            <span class="comments-link">
+            <a href="{{ result.object.get_absolute_url }}#comment-area">
+                {{ result.object.comment_set.count }} 评论</a></span>
+            <span class="views-count"><a
+                    href="{{ result.object.get_absolute_url }}">{{ result.object.views }} 阅读</a></span>
+        </div>
+    </header>
+    <div class="entry-content clearfix">
+        <p>{{ result.object.description }}</p>
+        <div class="read-more cl-effect-14">
+            <a href="{{ result.object.get_absolute_url }}" class="more-link">继续阅读 <span
+                    class="meta-nav">→</span></a>
+        </div>
+    </div>
+</article>
+{% empty %}
+<div class="no-post">没有搜索到你想要的结果！</div>
+{% endfor %}
+
+{% if is_paginated %}
+<div class="pagination-simple">
+    {% if page_obj.has_previous %}
+    <a href="?page={{ page_obj.previous_page_number }}">上一页</a>
+    {% endif %}
+    <span class="current">第 {{ page_obj.number }} 页 / 共 {{ paginator.num_pages }} 页</span>
+    {% if page_obj.has_next %}
+    <a href="?page={{ page_obj.next_page_number }}">下一页</a>
+    {% endif %}
+</div>
+{% endif %}
+
+
+{% endblock %}
+
+{% block news_article %}
+{% for obj in  object_list %}
+<li>
+    <a href="{% url 'article:detail' obj.pk %}">{{ obj.title }}</a>
+</li>
+
+{% endfor %}
+{% endblock %}
+
+
+{% block news_time %}
+{% for obj in  object_list %}
+<li>
+    <a href="{% url 'article:detail' obj.pk %}">{{ obj.create_time }}</a>
+</li>
+
+{% endfor %}
+
+{% endblock %}
